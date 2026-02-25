@@ -29,7 +29,7 @@
       .catch(err => console.error(err));
   }
 </script>
-  :root{
+:root{
   --bg:#071025;
   --panel:#0b1220;
   --accent:#4ade80;
@@ -84,7 +84,6 @@ canvas {
   border-radius:10px;
   background:linear-gradient(180deg,#071225,#06111b);
   width:100%;
-  height:620px;
 }
 
 .hud {
@@ -133,6 +132,7 @@ canvas {
 }
   </style>
 </head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <body>
   <div class="wrap">
     <header>
@@ -164,10 +164,9 @@ canvas {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     const w = canvas.clientWidth;
     const h = Math.min(700, Math.max(420, Math.floor(window.innerHeight * 0.62)));
-    canvas.width = Math.floor(w * ratio);
-    canvas.height = Math.floor(h * ratio);
-    canvas.style.height = h + 'px';
-    ctx.setTransform(ratio,0,0,ratio,0,0);
+    canvas.width = canvas.clientWidth * ratio;
+canvas.height = canvas.clientHeight * ratio;
+ctx.setTransform(ratio,0,0,ratio,0,0);
   }
   window.addEventListener('resize', resize);
   resize();
@@ -639,5 +638,6 @@ canvas {
 </script>
 </body>
 </html>
+
 
 
