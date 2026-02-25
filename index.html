@@ -29,9 +29,25 @@
       .catch(err => console.error(err));
   }
 </script>
+:root{
+      --bg:#071025; --panel:#0b1220; --accent:#4ade80; --danger:#fb7185; --muted:rgba(230,238,248,.65)
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#071025 0%, #0b1220 100%);color:#e6eef8}
+    .wrap{width:980px;max-width:96vw;background:var(--panel);border-radius:12px;padding:16px;box-shadow:0 8px 40px rgba(2,6,23,.75)}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    h1{font-size:1.15rem;margin:0}
+    .meta{margin-left:auto;font-size:.9rem;opacity:.95;color:var(--muted)}
+    canvas{display:block;border-radius:10px;background:linear-gradient(180deg,#071225,#06111b);width:100%;height:620px}
+    .hud{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .pill{padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.03);font-size:.92rem}
+    .btn{margin-left:auto;padding:8px 12px;border-radius:10px;border:0;background:#18354b;color:#dff6ff;cursor:pointer}
+    .legend{font-size:.85rem;margin-top:8px;color:rgba(230,238,248,.78)}
+    .small{font-size:.82rem;color:var(--muted)}
+    @media (max-width:520px){canvas{height:460px}}
+    .kbd{background:rgba(255,255,255,.03);padding:4px 8px;border-radius:6px}
   </style>
 </head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <body>
   <div class="wrap">
     <header>
@@ -54,107 +70,6 @@
   </div>
 
 <script>
-:root{
-  --bg:#071025;
-  --panel:#0b1220;
-  --accent:#4ade80;
-  --danger:#fb7185;
-  --muted:rgba(230,238,248,.65);
-}
-
-html, body {
-  height:100%;
-  margin:0;
-  font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
-}
-
-body {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(180deg,#071025 0%, #0b1220 100%);
-  color:#e6eef8;
-}
-
-.wrap {
-  width:980px;
-  max-width:96vw;
-  background:var(--panel);
-  border-radius:12px;
-  padding:16px;
-  box-shadow:0 8px 40px rgba(2,6,23,.75);
-}
-
-header {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:8px;
-}
-
-h1 {
-  font-size:1.15rem;
-  margin:0;
-}
-
-.meta {
-  margin-left:auto;
-  font-size:.9rem;
-  opacity:.95;
-  color:var(--muted);
-}
-
-canvas {
-  display:block;
-  border-radius:10px;
-  background:linear-gradient(180deg,#071225,#06111b);
-  width:100%;
-}
-
-.hud {
-  display:flex;
-  gap:8px;
-  align-items:center;
-  margin-top:10px;
-}
-
-.pill {
-  padding:6px 10px;
-  border-radius:10px;
-  background:rgba(255,255,255,.03);
-  font-size:.92rem;
-}
-
-.btn {
-  margin-left:auto;
-  padding:8px 12px;
-  border-radius:10px;
-  border:0;
-  background:#18354b;
-  color:#dff6ff;
-  cursor:pointer;
-}
-
-.legend {
-  font-size:.85rem;
-  margin-top:8px;
-  color:rgba(230,238,248,.78);
-}
-
-.small {
-  font-size:.82rem;
-  color:var(--muted);
-}
-
-.kbd {
-  background:rgba(255,255,255,.03);
-  padding:4px 8px;
-  border-radius:6px;
-}
-
-@media (max-width:520px){
-  canvas { height:460px; }
-}
 (() => {
   // Canvas & HiDPI
   const canvas = document.getElementById('c');
@@ -164,9 +79,10 @@ canvas {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     const w = canvas.clientWidth;
     const h = Math.min(700, Math.max(420, Math.floor(window.innerHeight * 0.62)));
-    canvas.width = canvas.clientWidth * ratio;
-canvas.height = canvas.clientHeight * ratio;
-ctx.setTransform(ratio,0,0,ratio,0,0);
+    canvas.width = Math.floor(w * ratio);
+    canvas.height = Math.floor(h * ratio);
+    canvas.style.height = h + 'px';
+    ctx.setTransform(ratio,0,0,ratio,0,0);
   }
   window.addEventListener('resize', resize);
   resize();
@@ -638,7 +554,3 @@ ctx.setTransform(ratio,0,0,ratio,0,0);
 </script>
 </body>
 </html>
-
-
-
-
