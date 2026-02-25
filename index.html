@@ -29,6 +29,31 @@
       .catch(err => console.error(err));
   }
 </script>
+  </style>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Cube Survival — Enhanced</h1>
+      <div class="meta small">Survive waves • Pickups & combos • Arrow keys / WASD</div>
+    </header>
+
+    <canvas id="c" width="1200" height="800"></canvas>
+
+    <div class="hud">
+      <div class="pill" id="score">Time: 0.0s</div>
+      <div class="pill" id="health">Health: 3</div>
+      <div class="pill" id="power">Power: —</div>
+      <div class="pill small" id="mult">x1</div>
+      <button class="btn" id="restart">Restart</button>
+    </div>
+    <div class="legend">
+      Controls: <span class="kbd">Arrow keys</span> or <span class="kbd">WASD</span> to move. Avoid red enemies. Pick up colored cubes: green heal, blue shield, yellow speed, purple multiplier.
+    </div>
+  </div>
+
+<script>
 :root{
   --bg:#071025;
   --panel:#0b1220;
@@ -130,31 +155,6 @@ canvas {
 @media (max-width:520px){
   canvas { height:460px; }
 }
-  </style>
-</head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<body>
-  <div class="wrap">
-    <header>
-      <h1>Cube Survival — Enhanced</h1>
-      <div class="meta small">Survive waves • Pickups & combos • Arrow keys / WASD</div>
-    </header>
-
-    <canvas id="c" width="1200" height="800"></canvas>
-
-    <div class="hud">
-      <div class="pill" id="score">Time: 0.0s</div>
-      <div class="pill" id="health">Health: 3</div>
-      <div class="pill" id="power">Power: —</div>
-      <div class="pill small" id="mult">x1</div>
-      <button class="btn" id="restart">Restart</button>
-    </div>
-    <div class="legend">
-      Controls: <span class="kbd">Arrow keys</span> or <span class="kbd">WASD</span> to move. Avoid red enemies. Pick up colored cubes: green heal, blue shield, yellow speed, purple multiplier.
-    </div>
-  </div>
-
-<script>
 (() => {
   // Canvas & HiDPI
   const canvas = document.getElementById('c');
@@ -638,6 +638,7 @@ ctx.setTransform(ratio,0,0,ratio,0,0);
 </script>
 </body>
 </html>
+
 
 
 
