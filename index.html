@@ -1,11 +1,35 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cube Survival — Enhanced</title>
-  <style>
-    :root{
+
+<!-- Firebase SDKs (must go before your JS code) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4z7QWgV6PTsgx6TWmBjU1bkc4gAYqok4",
+    authDomain: "cube-survival-6b695.firebaseapp.com",
+    projectId: "cube-survival-6b695",
+    storageBucket: "cube-survival-6b695.firebasestorage.app",
+    messagingSenderId: "837816892064",
+    appId: "1:837816892064:web:9d84d672a6bacdd3e4e7c5"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Save score function
+  function saveScore(name, score, time) {
+    db.collection("highscores").add({
+      player: name,
+      score: score,
+      time: time,
+      date: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => console.log("Score saved!"))
+      .catch(err => console.error(err));
+  }
+</script>
+:root{
       --bg:#071025; --panel:#0b1220; --accent:#4ade80; --danger:#fb7185; --muted:rgba(230,238,248,.65)
     }
     html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
@@ -206,11 +230,14 @@
 
   // Game over
   function gameOver(){
-    state.running = false;
-    // a deep tone
-    beep(120, 0.9, 'sine', 0.12);
-    render(true);
-  }
+  state.running = false;
+  beep(120, 0.9, 'sine', 0.12);
+  render(true);
+
+  // Prompt player for name and save score
+  const playerName = prompt("Enter your name for the highscore:");
+  if(playerName) saveScore(playerName, state.score, state.time.toFixed(1));
+}
 
   // Restart
   function restart(){
