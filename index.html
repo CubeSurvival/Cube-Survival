@@ -1,174 +1,55 @@
 <!doctype html>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4z7QWgV6PTsgx6TWmBjU1bkc4gAYqok4",
+    authDomain: "cube-survival-6b695.firebaseapp.com",
+    projectId: "cube-survival-6b695",
+    storageBucket: "cube-survival-6b695.firebasestorage.app",
+    messagingSenderId: "837816892064",
+    appId: "1:837816892064:web:9d84d672a6bacdd3e4e7c5"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.db = db;
+  window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
 </script>
 <html lang="en">
 <head>
-  <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyC4z7QWgV6PTsgx6TWmBjU1bkc4gAYqok4",
-  authDomain: "cube-survival-6b695.firebaseapp.com",
-  projectId: "cube-survival-6b695",
-  storageBucket: "cube-survival-6b695.firebasestorage.app",
-  messagingSenderId: "837816892064",
-  appId: "1:837816892064:web:9d84d672a6bacdd3e4e7c5"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
-const leaderboardEl = document.getElementById("leaderboard");
-
-async function loadLeaderboard() {
-  try {
-    const q = query(
-      collection(db, "leaderboard"),
-      orderBy("score", "desc"),
-      limit(10)
-    );
-    const snapshot = await getDocs(q);
-    if(snapshot.empty){
-      leaderboardEl.innerHTML = "<h3>Leaderboard</h3><p>No scores yet!</p>";
-      return;
-    }
-    let html = "<h3>Leaderboard</h3>";
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-      html += `<p>${data.name}: ${data.score}</p>`;
-    });
-    leaderboardEl.innerHTML = html;
-  } catch(e){
-    leaderboardEl.innerHTML = "<p>Failed to load leaderboard.</p>";
-    console.error(e);
-  }
-}
-
-async function saveScore(score){
-  const name = prompt("Enter your name:");
-  if(!name) return;
-  try{
-    await addDoc(collection(db, "leaderboard"), { name, score, time: new Date() });
-    loadLeaderboard();
-  } catch(e){ console.error(e); }
-}
-// Save score to Firestore and reload leaderboard
-async function saveScore(score){
-  const name = prompt("Enter your name:");
-  if(!name) return;
-
-  try{
-    await addDoc(collection(db, "leaderboard"), { name, score, time: new Date() });
-    loadLeaderboard();
-  } catch(e){ console.error(e); }
-}
-
-// Expose globally so gameOver can use it
-window.loadLeaderboard = loadLeaderboard;
-window.saveScore = saveScore;
-
-// Load leaderboard initially
-loadLeaderboard();
-
-// Wait for DOM to exist
-window.addEventListener('DOMContentLoaded', () => {
-  // Leaderboard element
-  const leaderboardEl = document.getElementById("leaderboard");
-
-  async function loadLeaderboard() {
-    try {
-      const q = query(
-        collection(db, "leaderboard"),
-        orderBy("score", "desc"),
-        limit(10)
-      );
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        leaderboardEl.innerHTML = "<h3>Leaderboard</h3><p>No scores yet!</p>";
-        return;
-      }
-
-      let html = "<h3>Leaderboard</h3>";
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        html += `<p>${data.name}: ${data.score}</p>`;
-      });
-      leaderboardEl.innerHTML = html;
-    } catch (err) {
-      console.error("Error loading leaderboard:", err);
-      leaderboardEl.innerHTML = "<p>Failed to load leaderboard.</p>";
-    }
-  }
-
-  // Call it once on page load
-  loadLeaderboard();
-
-  // Expose for gameOver to reload
-  window.loadLeaderboard = loadLeaderboard;
-});
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Cube Survival — Enhanced</title>
   <style>
     :root{
-    --bg:#071025; --panel:#0b1220; --accent:#4ade80; --danger:#fb7185; --muted:rgba(230,238,248,.65)
-      html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
-      body{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#071025 0%, #0b1220 100%);color:#e6eef8}
-      .wrap{width:980px;max-width:96vw;background:var(--panel);border-radius:12px;padding:16px;box-shadow:0 8px 40px rgba(2,6,23,.75)}
-      header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-      h1{font-size:1.15rem;margin:0}
-      .meta{margin-left:auto;font-size:.9rem;opacity:.95;color:var(--muted)}
-      canvas{display:block;border-radius:10px;background:linear-gradient(180deg,#071225,#06111b);width:100%;height:620px}
-      .hud{display:flex;gap:8px;align-items:center;margin-top:10px}
-      .pill{padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.03);font-size:.92rem}
-      .btn{margin-left:auto;padding:8px 12px;border-radius:10px;border:0;background:#18354b;color:#dff6ff;cursor:pointer}
-      .legend{font-size:.85rem;margin-top:8px;color:rgba(230,238,248,.78)}
-      .small{font-size:.82rem;color:var(--muted)}
-      @media (max-width:520px){canvas{height:460px}}
-      .kbd{background:rgba(255,255,255,.03);padding:4px 8px;border-radius:6px}
-      .wrap {display:flex; max-width:96vw; width:980px; gap:16px;}
-      #gameContainer {background:var(--panel); border-radius:12px; padding:16px; flex:1; display:flex; flex-direction:column; align-items:center;}
-      #leaderboardContainer {background:var(--panel); border-radius:12px; padding:16px; width:240px; color:#e6eef8;}
-      .leaderboard h3 {margin:0 0 8px 0;}
-      .leaderboard p {margin:2px 0;}
-  }
+      --bg:#071025; --panel:#0b1220; --accent:#4ade80; --danger:#fb7185; --muted:rgba(230,238,248,.65)
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#071025 0%, #0b1220 100%);color:#e6eef8}
+    .wrap{width:980px;max-width:96vw;background:var(--panel);border-radius:12px;padding:16px;box-shadow:0 8px 40px rgba(2,6,23,.75)}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    h1{font-size:1.15rem;margin:0}
+    .meta{margin-left:auto;font-size:.9rem;opacity:.95;color:var(--muted)}
+    canvas{display:block;border-radius:10px;background:linear-gradient(180deg,#071225,#06111b);width:100%;height:620px}
+    .hud{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .pill{padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.03);font-size:.92rem}
+    .btn{margin-left:auto;padding:8px 12px;border-radius:10px;border:0;background:#18354b;color:#dff6ff;cursor:pointer}
+    .legend{font-size:.85rem;margin-top:8px;color:rgba(230,238,248,.78)}
+    .small{font-size:.82rem;color:var(--muted)}
+    @media (max-width:520px){canvas{height:460px}}
+    .kbd{background:rgba(255,255,255,.03);padding:4px 8px;border-radius:6px}
   </style>
 </head>
 <body>
   <div class="wrap">
-
-  <!-- LEFT SIDE (GAME AREA) -->
-  <div id="gameContainer">
-
     <header>
       <h1>Cube Survival — Enhanced</h1>
+      <div class="meta small">Survive waves • Pickups & combos • Arrow keys / WASD</div>
     </header>
-
-    <canvas id="c" width="1200" height="800"></canvas>
-
-    <!-- HUD UNDER THE GAME -->
-    <div class="hud">
-      <div class="pill" id="score">Time: 0.0s</div>
-      <div class="pill" id="health">Health: 3</div>
-      <div class="pill" id="power">Power: —</div>
-      <div class="pill small" id="mult">x1</div>
-      <button class="btn" id="restart">Restart</button>
-    </div>
-
-  </div>
-
-  <!-- RIGHT SIDE (LEADERBOARD) -->
-  <div id="leaderboardContainer">
-    <div id="leaderboard">
-      <h3>Leaderboard</h3>
-      <p>Loading...</p>
-    </div>
-  </div>
-
-</div>
 
     <canvas id="c" width="1200" height="800"></canvas>
 
@@ -181,26 +62,13 @@ window.addEventListener('DOMContentLoaded', () => {
       <div id="leaderboard"></div>
       <script>
         async function loadLeaderboard() {
-          console.log("Loading leaderboard...");
-          const { collection, getDocs, query, orderBy, limit } = window.firestoreFunctions;
-        
-          const q = query(
-            collection(window.db, "leaderboard"),
-            orderBy("score", "desc"),
-            limit(10)
-          );
-        
-          const querySnapshot = await getDocs(q);
-        
-          let html = "<h3>Leaderboard</h3>";
-          querySnapshot.forEach((doc) => {
-            console.log(doc.id, doc.data());
-            const data = doc.data();
-            html += `<p>${data.name}: ${data.score}</p>`;
-        });
-
-  document.getElementById("leaderboard").innerHTML = html;
-}
+        const { collection, getDocs, query, orderBy, limit } = window.firestoreFunctions;
+      
+        const q = query(
+          collection(window.db, "leaderboard"),
+          orderBy("score", "desc"),
+          limit(10)
+        );
       
         const querySnapshot = await getDocs(q);
       
@@ -717,17 +585,5 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
