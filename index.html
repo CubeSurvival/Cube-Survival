@@ -1,26 +1,60 @@
 <!doctype html>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyC4z7QWgV6PTsgx6TWmBjU1bkc4gAYqok4",
-    authDomain: "cube-survival-6b695.firebaseapp.com",
-    projectId: "cube-survival-6b695",
-    storageBucket: "cube-survival-6b695.firebasestorage.app",
-    messagingSenderId: "837816892064",
-    appId: "1:837816892064:web:9d84d672a6bacdd3e4e7c5"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
 
-  window.db = db;
-  window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
-  window.addEventListener('DOMContentLoaded', () => {
-});
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyC4z7QWgV6PTsgx6TWmBjU1bkc4gAYqok4",
+  authDomain: "cube-survival-6b695.firebaseapp.com",
+  projectId: "cube-survival-6b695",
+  storageBucket: "cube-survival-6b695.firebasestorage.app",
+  messagingSenderId: "837816892064",
+  appId: "1:837816892064:web:9d84d672a6bacdd3e4e7c5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
+
+// Wait for DOM to exist
+window.addEventListener('DOMContentLoaded', () => {
+  // Leaderboard element
+  const leaderboardEl = document.getElementById("leaderboard");
+
+  async function loadLeaderboard() {
+    try {
+      const q = query(
+        collection(db, "leaderboard"),
+        orderBy("score", "desc"),
+        limit(10)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        leaderboardEl.innerHTML = "<h3>Leaderboard</h3><p>No scores yet!</p>";
+        return;
+      }
+
+      let html = "<h3>Leaderboard</h3>";
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        html += `<p>${data.name}: ${data.score}</p>`;
+      });
+      leaderboardEl.innerHTML = html;
+    } catch (err) {
+      console.error("Error loading leaderboard:", err);
+      leaderboardEl.innerHTML = "<p>Failed to load leaderboard.</p>";
+    }
+  }
+
+  // Call it once on page load
   loadLeaderboard();
+
+  // Expose for gameOver to reload
+  window.loadLeaderboard = loadLeaderboard;
+});
 </script>
 <html lang="en">
 <head>
@@ -601,6 +635,7 @@
 </script>
 </body>
 </html>
+
 
 
 
