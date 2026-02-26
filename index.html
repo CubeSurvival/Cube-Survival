@@ -138,17 +138,50 @@ window.addEventListener('DOMContentLoaded', () => {
   </style>
 </head>
 <body>
+  <script>
+    html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+    background: var(--bg);
+    overflow: hidden; /* 🚀 prevents scrolling */
+  }
+  
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* center vertically */
+  }
   <div class="wrap">
+
+  <!-- LEFT SIDE (GAME AREA) -->
+  <div id="gameContainer">
+
     <header>
       <h1>Cube Survival — Enhanced</h1>
-      <div class="meta small">Survive waves • Pickups & combos • Arrow keys / WASD</div>
     </header>
-    <div id="leaderboardContainer">
-    <div class="leaderboard" id="leaderboard">
+
+    <canvas id="c" width="1200" height="800"></canvas>
+
+    <!-- HUD UNDER THE GAME -->
+    <div class="hud">
+      <div class="pill" id="score">Time: 0.0s</div>
+      <div class="pill" id="health">Health: 3</div>
+      <div class="pill" id="power">Power: —</div>
+      <div class="pill small" id="mult">x1</div>
+      <button class="btn" id="restart">Restart</button>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDE (LEADERBOARD) -->
+  <div id="leaderboardContainer">
+    <div id="leaderboard">
       <h3>Leaderboard</h3>
       <p>Loading...</p>
     </div>
   </div>
+
 </div>
 
     <canvas id="c" width="1200" height="800"></canvas>
@@ -698,6 +731,7 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
