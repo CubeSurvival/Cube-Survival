@@ -17,10 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
-  // Leaderboard element
 const leaderboardEl = document.getElementById("leaderboard");
 
-// Load top 10 scores
 async function loadLeaderboard() {
   try {
     const q = query(
@@ -29,24 +27,30 @@ async function loadLeaderboard() {
       limit(10)
     );
     const snapshot = await getDocs(q);
-
     if(snapshot.empty){
       leaderboardEl.innerHTML = "<h3>Leaderboard</h3><p>No scores yet!</p>";
       return;
     }
-
     let html = "<h3>Leaderboard</h3>";
-    snapshot.forEach(doc => {
+    snapshot.forEach(doc=>{
       const data = doc.data();
       html += `<p>${data.name}: ${data.score}</p>`;
     });
     leaderboardEl.innerHTML = html;
   } catch(e){
-    console.error(e);
     leaderboardEl.innerHTML = "<p>Failed to load leaderboard.</p>";
+    console.error(e);
   }
 }
 
+async function saveScore(score){
+  const name = prompt("Enter your name:");
+  if(!name) return;
+  try{
+    await addDoc(collection(db, "leaderboard"), { name, score, time: new Date() });
+    loadLeaderboard();
+  } catch(e){ console.error(e); }
+}
 // Save score to Firestore and reload leaderboard
 async function saveScore(score){
   const name = prompt("Enter your name:");
@@ -694,6 +698,7 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
