@@ -13,18 +13,6 @@
     messagingSenderId: "837816892064",
     appId: "1:837816892064:web:9d84d672a6bacdd3e4e7c5"
   };
-  async function saveScore(score) {
-  const name = prompt("Enter your name:");
-  if (!name) return;
-
-  const { collection, addDoc } = window.firestoreFunctions;
-
-  await addDoc(collection(window.db, "leaderboard"), {
-    name: name,
-    score: score,
-    time: new Date()
-  });
-}
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
@@ -275,9 +263,10 @@
     state.running = false;
     // a deep tone
     beep(120, 0.9, 'sine', 0.12);
-    saveScore(state.score);
     render(true);
-    loadLeaderboard();
+    saveScore(state.score).then(() => {
+      loadLeaderboard();
+    });
   }
 
   // Restart
@@ -592,8 +581,10 @@
   for(let i=0;i<3;i++) spawnEnemy(i===0?'chaser':i===1?'zig':'scout');
 
 })();
+  loadLeaderboard();
 </script>
 </body>
 </html>
+
 
 
