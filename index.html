@@ -18,6 +18,9 @@
 
   window.db = db;
   window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
+  window.addEventListener('DOMContentLoaded', () => {
+  loadLeaderboard();
+});
 </script>
 <html lang="en">
 <head>
@@ -585,6 +588,7 @@
 </script>
 </body>
 </html>
+
 
 
 
