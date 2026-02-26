@@ -13,6 +13,18 @@
     messagingSenderId: "837816892064",
     appId: "1:837816892064:web:9d84d672a6bacdd3e4e7c5"
   };
+  async function saveScore(score) {
+  const name = prompt("Enter your name:");
+  if (!name) return;
+
+  const { collection, addDoc } = window.firestoreFunctions;
+
+  await addDoc(collection(window.db, "leaderboard"), {
+    name: name,
+    score: score,
+    time: new Date()
+  });
+}
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
@@ -59,6 +71,28 @@
       <div class="pill" id="power">Power: —</div>
       <div class="pill small" id="mult">x1</div>
       <button class="btn" id="restart">Restart</button>
+      <div id="leaderboard"></div>
+      <script>
+        async function loadLeaderboard() {
+        const { collection, getDocs, query, orderBy, limit } = window.firestoreFunctions;
+      
+        const q = query(
+          collection(window.db, "leaderboard"),
+          orderBy("score", "desc"),
+          limit(10)
+        );
+      
+        const querySnapshot = await getDocs(q);
+      
+        let html = "<h3>Leaderboard</h3>";
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          html += `<p>${data.name}: ${data.score}</p>`;
+        });
+      
+        document.getElementById("leaderboard").innerHTML = html;
+      }
+      </script>
     </div>
     <div class="legend">
       Controls: <span class="kbd">Arrow keys</span> or <span class="kbd">WASD</span> to move. Avoid red enemies. Pick up colored cubes: green heal, blue shield, yellow speed, purple multiplier.
@@ -223,13 +257,27 @@
     // particles
     emit(e.x, e.y, e.color, 14 + Math.floor(Math.random()*8), Math.PI*2, 140 + Math.random()*80, 0.6 + Math.random()*0.4);
   }
-
+  //save score
+  async function saveScore(score) {
+      const name = prompt("Enter your name:");
+      if (!name) return;
+    
+      const { collection, addDoc } = window.firestoreFunctions;
+    
+      await addDoc(collection(window.db, "leaderboard"), {
+        name: name,
+        score: score,
+        time: new Date()
+      });
+    }
   // Game over
   function gameOver(){
     state.running = false;
     // a deep tone
     beep(120, 0.9, 'sine', 0.12);
+    saveScore(state.score);
     render(true);
+    loadLeaderboard();
   }
 
   // Restart
@@ -547,4 +595,5 @@
 </script>
 </body>
 </html>
+
 
