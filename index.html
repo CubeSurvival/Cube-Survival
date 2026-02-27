@@ -181,11 +181,7 @@ window.addEventListener('DOMContentLoaded', () => {
   resize();
 
   // UI
-  const scoreEl = document.getElementById('score');
-  const healthEl = document.getElementById('health');
-  const powerEl = document.getElementById('power');
-  const multEl = document.getElementById('mult');
-  const restartBtn = document.getElementById('restart');
+  const restartBtn = document.getElementById('restartBtn');
 
   // Input
   const keys = {};
@@ -499,12 +495,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // difficulty scaling: faster spawns over time (soft)
     if(state.time > 8) state.enemySpawnInterval = Math.max(0.36, 1.4 - state.time*0.018 - Math.min(0.7, state.wave*0.01));
     if(state.time > 20) state.powerSpawnInterval = Math.max(3.6, 5 - state.time*0.01);
-
-    // UI values
-    scoreEl.textContent = `Time: ${state.time.toFixed(1)}s • Score: ${state.score}`;
-    healthEl.textContent = `Health: ${p.health}`;
-    powerEl.textContent = `${p.speedBoost>0? 'Speed' : p.shield>0? 'Shield' : p.invulnerable>0? 'Invul' : '—'}`;
-    multEl.textContent = `x${state.multiplier.toFixed(1)}`;
   }
 
   // Render
@@ -659,6 +649,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
