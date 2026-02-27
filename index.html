@@ -20,7 +20,7 @@ const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit 
 
 // Wait for DOM to exist
 window.addEventListener('DOMContentLoaded', () => {
-  // Leaderboard element
+
   const leaderboardEl = document.getElementById("leaderboard");
 
   async function loadLeaderboard() {
@@ -30,30 +30,33 @@ window.addEventListener('DOMContentLoaded', () => {
         orderBy("score", "desc"),
         limit(10)
       );
-      const querySnapshot = await getDocs(q);
 
-      if (querySnapshot.empty) {
-        leaderboardEl.innerHTML = "<h3>Leaderboard</h3><p>No scores yet!</p>";
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        leaderboardEl.innerHTML = "<p>No scores yet!</p>";
         return;
       }
 
-      let html = "<h3>Leaderboard</h3>";
-      querySnapshot.forEach(doc => {
+      let html = "";
+      snapshot.forEach(doc => {
         const data = doc.data();
         html += `<p>${data.name}: ${data.score}</p>`;
       });
+
       leaderboardEl.innerHTML = html;
+
     } catch (err) {
-      console.error("Error loading leaderboard:", err);
-      leaderboardEl.innerHTML = "<p>Failed to load leaderboard.</p>";
+      console.error("Leaderboard error:", err);
+      leaderboardEl.innerHTML = "<p>Failed to load.</p>";
     }
   }
 
-  // Call it once on page load
-  loadLeaderboard();
-
-  // Expose for gameOver to reload
+  // expose globally so gameOver can call it
   window.loadLeaderboard = loadLeaderboard;
+
+  // load on page start
+  loadLeaderboard();
 });
 </script>
 <html lang="en">
@@ -82,7 +85,7 @@ window.addEventListener('DOMContentLoaded', () => {
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="wrap" style="display:flex; gap:16px;">
     <header>
       <h1>Cube Survival — Enhanced</h1>
       <div class="meta small">Survive waves • Pickups & combos • Arrow keys / WASD</div>
@@ -96,44 +99,20 @@ window.addEventListener('DOMContentLoaded', () => {
       <div class="pill" id="power">Power: —</div>
       <div class="pill small" id="mult">x1</div>
       <button class="btn" id="restart">Restart</button>
-      <div id="leaderboard"></div>
-      <script>
-        async function loadLeaderboard() {
-          console.log("Loading leaderboard...");
-          const { collection, getDocs, query, orderBy, limit } = window.firestoreFunctions;
-        
-          const q = query(
-            collection(window.db, "leaderboard"),
-            orderBy("score", "desc"),
-            limit(10)
-          );
-        
-          const querySnapshot = await getDocs(q);
-        
-          let html = "<h3>Leaderboard</h3>";
-          querySnapshot.forEach((doc) => {
-            console.log(doc.id, doc.data());
-            const data = doc.data();
-            html += `<p>${data.name}: ${data.score}</p>`;
-        });
-
-  document.getElementById("leaderboard").innerHTML = html;
-}
-      
-        const querySnapshot = await getDocs(q);
-      
-        let html = "<h3>Leaderboard</h3>";
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          html += `<p>${data.name}: ${data.score}</p>`;
-        });
-      
-        document.getElementById("leaderboard").innerHTML = html;
-      }
-      </script>
     </div>
     <div class="legend">
       Controls: <span class="kbd">Arrow keys</span> or <span class="kbd">WASD</span> to move. Avoid red enemies. Pick up colored cubes: green heal, blue shield, yellow speed, purple multiplier.
+    </div>
+    <!-- Leaderboard Panel -->
+    <div id="leaderboardPanel" style="
+    width:260px;
+    background:rgba(255,255,255,0.03);
+    border-radius:10px;
+    padding:12px;
+    font-size:14px;
+    ">
+    <h3 style="margin-top:0;">Leaderboard</h3>
+    <div id="leaderboard">Loading...</div>
     </div>
   </div>
 
@@ -315,8 +294,10 @@ window.addEventListener('DOMContentLoaded', () => {
     beep(120, 0.9, 'sine', 0.12);
     render(true);
     saveScore(state.score).then(() => {
-      loadLeaderboard();
-    });
+  if (window.loadLeaderboard) {
+    window.loadLeaderboard();
+  }
+});
   }
 
   // Restart
@@ -631,10 +612,10 @@ window.addEventListener('DOMContentLoaded', () => {
   for(let i=0;i<3;i++) spawnEnemy(i===0?'chaser':i===1?'zig':'scout');
 
 })();
-  loadLeaderboard();
 </script>
 </body>
 </html>
+
 
 
 
