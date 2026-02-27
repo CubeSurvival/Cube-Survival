@@ -568,19 +568,6 @@ window.addEventListener('DOMContentLoaded', () => {
       ctx.restore();
     }
 
-    // HUD inside canvas (top-left)
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.fillRect(8,8,260,60);
-    ctx.fillStyle = '#e6eef8';
-    ctx.font = '14px system-ui, Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Time: ${state.time.toFixed(1)}s`, 16, 28);
-    ctx.fillText(`Health: ${p.health}`, 16, 48);
-    ctx.fillStyle = '#9fb6c9';
-    ctx.fillText(`Score: ${state.score} • x${state.multiplier.toFixed(1)}`, 140, 28);
-    ctx.restore();
-
     // combo indicator
     if(state.combo > 1){
       ctx.save();
@@ -608,7 +595,17 @@ window.addEventListener('DOMContentLoaded', () => {
       ctx.restore();
     }
   }
+  // HUD updater (OUTSIDE update function)
+function updateHUD() {
+  document.getElementById("hudTimeScore").textContent =
+    `Time: ${state.time.toFixed(1)}s • Score: ${state.score}`;
 
+  document.getElementById("hudHealth").textContent =
+    `Health: ${state.player.health}`;
+
+  document.getElementById("hudMultiplier").textContent =
+    `x${state.multiplier.toFixed(1)}`;
+}
   // drawing helpers
   function drawCube(x,y,size,color,withInner=true){
     // main face
@@ -662,6 +659,7 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
