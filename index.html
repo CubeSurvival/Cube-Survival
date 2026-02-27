@@ -20,6 +20,45 @@
   window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
   window.addEventListener('DOMContentLoaded', () => {
   loadLeaderboard();
+  const leaderboardEl = document.getElementById("leaderboard");
+
+async function loadLeaderboard() {
+  try {
+    const q = query(
+      collection(db, "leaderboard"),
+      orderBy("score", "desc"),
+      limit(10)
+    );
+    const snapshot = await getDocs(q);
+    if(snapshot.empty){
+      leaderboardEl.innerHTML = "<h3>Leaderboard</h3><p>No scores yet!</p>";
+      return;
+    }
+    let html = "<h3>Leaderboard</h3>";
+    snapshot.forEach(doc=>{
+      const data = doc.data();
+      html += `<p>${data.name}: ${data.score}</p>`;
+    });
+    leaderboardEl.innerHTML = html;
+  } catch(e){
+    leaderboardEl.innerHTML = "<p>Failed to load leaderboard.</p>";
+    console.error(e);
+  }
+}
+
+async function saveScore(score){
+  const name = prompt("Enter your name:");
+  if(!name) return;
+  try{
+    await addDoc(collection(db, "leaderboard"), { name, score, time: new Date() });
+    loadLeaderboard();
+  } catch(e){ console.error(e); }
+}
+function gameOver(){
+  state.running = false;
+  // your overlay code
+  saveScore(state.score); // this will prompt for name and update leaderboard
+}
 });
 </script>
 <html lang="en">
@@ -44,11 +83,29 @@
     .legend{font-size:.85rem;margin-top:8px;color:rgba(230,238,248,.78)}
     .small{font-size:.82rem;color:var(--muted)}
     @media (max-width:520px){canvas{height:460px}}
-    .kbd{background:rgba(255,255,255,.03);padding:4px 8px;border-radius:6px}
+    .kbd{background:rgba(255,255,255,.03);padding:4px 8px;border-radius:6px   
+    .wrap {display:flex; max-width:96vw; width:980px; gap:16px;}
+    #gameContainer {background:var(--panel); border-radius:12px; padding:16px; flex:1; display:flex; flex-direction:column; align-items:center;}
+    #leaderboardContainer {background:var(--panel); border-radius:12px; padding:16px; width:240px; color:#e6eef8;}
+    .leaderboard h3 {margin:0 0 8px 0;}
+    .leaderboard p {margin:2px 0;}
   </style>
 </head>
 <body>
   <div class="wrap">
+  <!-- Game Panel -->
+  <div id="gameContainer">
+    <!-- your header, canvas, HUD etc. stay here -->
+  </div>
+
+  <!-- Leaderboard Panel -->
+  <div id="leaderboardContainer">
+    <div class="leaderboard" id="leaderboard">
+      <h3>Leaderboard</h3>
+      <p>Loading...</p>
+    </div>
+  </div>
+</div>
     <header>
       <h1>Cube Survival — Enhanced</h1>
       <div class="meta small">Survive waves • Pickups & combos • Arrow keys / WASD</div>
@@ -588,6 +645,7 @@
 </script>
 </body>
 </html>
+
 
 
 
