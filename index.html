@@ -16,6 +16,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+window.db = db;
+window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
 const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
 
 // Wait for DOM to exist
@@ -649,6 +651,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
