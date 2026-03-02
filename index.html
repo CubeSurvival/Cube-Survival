@@ -72,85 +72,77 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
     body{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#071025 0%, #0b1220 100%);color:#e6eef8}
-    .wrap{width:980px;max-width:96vw;background:var(--panel);border-radius:12px;padding:16px;box-shadow:0 8px 40px rgba(2,6,23,.75)}
-    header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
     h1{font-size:1.15rem;margin:0}
-    .meta{margin-left:auto;font-size:.9rem;opacity:.95;color:var(--muted)}
     canvas{display:block;border-radius:10px;background:linear-gradient(180deg,#071225,#06111b);width:100%;height:620px}
     .hud{display:flex;gap:8px;align-items:center;margin-top:10px}
     .pill{padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.03);font-size:.92rem}
     .btn{margin-left:auto;padding:8px 12px;border-radius:10px;border:0;background:#18354b;color:#dff6ff;cursor:pointer}
-    .legend{font-size:.85rem;margin-top:8px;color:rgba(230,238,248,.78)}
-    .small{font-size:.82rem;color:var(--muted)}
     @media (max-width:520px){canvas{height:460px}}
     .kbd{background:rgba(255,255,255,.03);padding:4px 8px;border-radius:6px}
-    .hud {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
+    hhtml, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: Inter, system-ui, sans-serif;
+  background: linear-gradient(180deg,#071025 0%, #0b1220 100%);
+  color: #e6eef8;
+}
 
+.container {
   display: flex;
-  justify-content: space-between;
+  height: 100vh;
+  width: 100vw;
+}
+
+.game-section {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
   align-items: center;
-
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 14px 18px;
-
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-.hud-left {
+canvas {
+  width: 90%;
+  height: 85%;
+  max-width: 900px;
+  background: #071225;
+  border-radius: 14px;
+}
+
+.hud {
+  position: absolute;
+  top: 20px;
+  left: 40px;
   display: flex;
-  gap: 12px;
+  gap: 20px;
+  align-items: center;
+  font-weight: bold;
 }
 
-.hud-pill {
-  background: rgba(255,255,255,0.08);
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.restart-btn {
-  background: #2b6cb0;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 12px;
-  color: white;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.restart-btn:hover {
-  background: #3182ce;
+.leaderboard {
+  width: 300px;
+  padding: 20px;
+  background: rgba(255,255,255,0.04);
+  border-left: 1px solid rgba(255,255,255,0.06);
+  overflow-y: auto;
 }
   </style>
 </head>
 <body>
-  <div class="wrap" style="display:flex; gap:16px;">
-    <header>
-      <h1>Cube Survival — Enhanced</h1>
-      <div class="meta small">Survive waves • Pickups & combos • Arrow keys / WASD</div>
-    </header>
+  <div class="container">
 
-    <canvas id="c" width="1200" height="800"></canvas>
+  <div class="game-section">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
 
     <div class="hud">
-  <div class="hud-left">
-    <div class="hud-pill" id="hudTimeScore">Time: 0s • Score: 0</div>
-    <div class="hud-pill" id="hudHealth">Health: 3</div>
-    <div class="hud-pill" id="hudMultiplier">x1.0</div>
-  </div>
-  <button id="restartBtn" class="restart-btn">Restart</button>
-</div>
-    <div class="legend">
-      Controls: <span class="kbd">Arrow keys</span> or <span class="kbd">WASD</span> to move. Avoid red enemies. Pick up colored cubes: green heal, blue shield, yellow speed, purple multiplier.
+      <div id="hudTimeScore"></div>
+      <div id="hudHealth"></div>
+      <div id="hudMultiplier"></div>
     </div>
+  </div>
+
+</div>
     <!-- Leaderboard Panel -->
     <div id="leaderboardPanel" style="
     width:260px;
@@ -167,7 +159,7 @@ window.addEventListener('DOMContentLoaded', () => {
 <script>
 (() => {
   // Canvas & HiDPI
-  const canvas = document.getElementById('c');
+  const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
 
   function resize(){
@@ -651,6 +643,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
