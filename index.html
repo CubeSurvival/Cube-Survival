@@ -169,12 +169,6 @@ canvas {
   width: 60px;
   text-align: right;
 }
-#restartBtn {
-  margin-top: 10px;
-  padding: 10px 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
   </style>
 </head>
 <body>
@@ -183,18 +177,11 @@ canvas {
   <div class="game-section">
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-<div class="game-area">
-
-  <div class="hud">
-    <div id="hudTimeScore"></div>
-    <div id="hudHealth"></div>
-    <div id="hudMultiplier"></div>
-  </div>
-
-  <button id="restartBtn" class="btn">Restart</button>
-
-  <canvas id="gameCanvas"></canvas>
-
+    <div class="hud">
+      <div id="hudTimeScore"></div>
+      <div id="hudHealth"></div>
+      <div id="hudMultiplier"></div>
+    </div>
   </div>
 
 </div>
@@ -716,8 +703,6 @@ function updateHUD() {
 </script>
 </body>
 </html>
-
-
 
 
 
