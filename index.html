@@ -57,11 +57,11 @@ window.addEventListener('DOMContentLoaded', () => {
       const entry = document.createElement("div");
       entry.className = "leaderboard-entry";
 
-      entry.innerHTML = `
+      entry.innerHTML = 
         <span class="rank">#${rank}</span>
         <span class="name">${data.name}</span>
         <span class="score">${data.score}</span>
-      `;
+      ;
 
       leaderboardDiv.appendChild(entry);
       rank++;
@@ -106,24 +106,6 @@ window.addEventListener('DOMContentLoaded', () => {
   background: linear-gradient(180deg,#071025 0%, #0b1220 100%);
   color: #e6eef8;
 }
-.game-section {
-  position: relative; /* Needed so HUD can be positioned relative to canvas */
-}
-
-.hud {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  background: rgba(0,0,0,0.25);
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-weight: bold;
-  z-index: 10;
-}
 
 .container {
   display: flex;
@@ -146,6 +128,17 @@ canvas {
   background: #071225;
   border-radius: 14px;
 }
+
+.hud {
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-weight: bold;
+}
+
 .leaderboard {
   width: 300px;
   padding: 20px;
@@ -178,18 +171,19 @@ canvas {
   </style>
 </head>
 <body>
-  <div class="game-section">
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <div class="container">
 
-  <div class="hud" id="hudOverlay">
-    <div id="hudTimeScore"></div>
-    <div id="hudHealth"></div>
-    <div class="multiplier-group">
+  <div class="game-section">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div class="hud">
+      <div id="hudTimeScore"></div>
+      <div id="hudHealth"></div>
       <div id="hudMultiplier"></div>
-      <button id="restartBtn" class="btn">Restart</button>
     </div>
   </div>
 
+</div>
     <!-- Leaderboard Panel -->
     <div id="leaderboardPanel" style="
     width:260px;
@@ -358,7 +352,7 @@ canvas {
     emit(e.x, e.y, e.color, 14 + Math.floor(Math.random()*8), Math.PI*2, 140 + Math.random()*80, 0.6 + Math.random()*0.4);
   }
   //save score
-  async function saveScore(score) {
+async function saveScore(score) {
   const name = prompt("Enter your name:");
   if (!name) return;
 
@@ -622,7 +616,7 @@ canvas {
       ctx.font = '18px system-ui, Arial';
       ctx.fillStyle = '#ffd166';
       ctx.textAlign = 'left';
-      ctx.fillText(`Combo: ${state.combo} • x${state.multiplier.toFixed(1)}`, 16, 78);
+      ctx.fillText(Combo: ${state.combo} • x${state.multiplier.toFixed(1)}, 16, 78);
       ctx.restore();
     }
 
@@ -636,22 +630,22 @@ canvas {
       ctx.font = '36px system-ui, Arial';
       ctx.fillText('GAME OVER', W/2, H/2 - 16);
       ctx.font = '18px system-ui, Arial';
-      ctx.fillText(`You survived ${state.time.toFixed(1)}s • Score ${state.score}`, W/2, H/2 + 18);
+      ctx.fillText(You survived ${state.time.toFixed(1)}s • Score ${state.score}, W/2, H/2 + 18);
       ctx.font = '14px system-ui, Arial';
-      ctx.fillText(`Press Restart to play again`, W/2, H/2 + 46);
+      ctx.fillText(Press Restart to play again, W/2, H/2 + 46);
       ctx.restore();
     }
   }
   // HUD updater (OUTSIDE update function)
 function updateHUD() {
   document.getElementById("hudTimeScore").textContent =
-    `Time: ${state.time.toFixed(1)}s • Score: ${state.score}`;
+    Time: ${state.time.toFixed(1)}s • Score: ${state.score};
 
   document.getElementById("hudHealth").textContent =
-    `Health: ${state.player.health}`;
+    Health: ${state.player.health};
 
   document.getElementById("hudMultiplier").textContent =
-    `x${state.multiplier.toFixed(1)}`;
+    x${state.multiplier.toFixed(1)};
 }
   // drawing helpers
   function drawCube(x,y,size,color,withInner=true){
@@ -706,13 +700,6 @@ function updateHUD() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
 
 
 
