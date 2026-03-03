@@ -28,6 +28,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 window.db = db;
 window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit, where, updateDoc };
+const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
 
 // Wait for DOM to exist
 window.addEventListener('DOMContentLoaded', () => {
@@ -57,11 +58,11 @@ window.addEventListener('DOMContentLoaded', () => {
       const entry = document.createElement("div");
       entry.className = "leaderboard-entry";
 
-      entry.innerHTML = 
+      entry.innerHTML = `
         <span class="rank">#${rank}</span>
         <span class="name">${data.name}</span>
         <span class="score">${data.score}</span>
-      ;
+      `;
 
       leaderboardDiv.appendChild(entry);
       rank++;
@@ -352,26 +353,28 @@ canvas {
     emit(e.x, e.y, e.color, 14 + Math.floor(Math.random()*8), Math.PI*2, 140 + Math.random()*80, 0.6 + Math.random()*0.4);
   }
   //save score
-async function saveScore(score) {
+  async function saveScore(score) {
   const name = prompt("Enter your name:");
   if (!name) return;
 
   const { collection, addDoc, getDocs, query, where, updateDoc } = window.firestoreFunctions;
 
   const leaderboardRef = collection(window.db, "leaderboard");
+
   const q = query(leaderboardRef, where("name", "==", name));
   const snapshot = await getDocs(q);
 
   if (!snapshot.empty) {
-    const docSnap = snapshot.docs[0]; // assume one per name
-    const existing = docSnap.data();
+    snapshot.forEach(async (docSnap) => {
+      const existing = docSnap.data();
 
-    if (score > existing.score) {
-      await updateDoc(docSnap.ref, {
-        score: score,
-        time: new Date()
-      });
-    }
+      if (score > existing.score) {
+        await updateDoc(docSnap.ref, {
+          score: score,
+          time: new Date()
+        });
+      }
+    });
   } else {
     await addDoc(leaderboardRef, {
       name: name,
@@ -616,7 +619,7 @@ async function saveScore(score) {
       ctx.font = '18px system-ui, Arial';
       ctx.fillStyle = '#ffd166';
       ctx.textAlign = 'left';
-      ctx.fillText(Combo: ${state.combo} • x${state.multiplier.toFixed(1)}, 16, 78);
+      ctx.fillText(`Combo: ${state.combo} • x${state.multiplier.toFixed(1)}`, 16, 78);
       ctx.restore();
     }
 
@@ -630,22 +633,22 @@ async function saveScore(score) {
       ctx.font = '36px system-ui, Arial';
       ctx.fillText('GAME OVER', W/2, H/2 - 16);
       ctx.font = '18px system-ui, Arial';
-      ctx.fillText(You survived ${state.time.toFixed(1)}s • Score ${state.score}, W/2, H/2 + 18);
+      ctx.fillText(`You survived ${state.time.toFixed(1)}s • Score ${state.score}`, W/2, H/2 + 18);
       ctx.font = '14px system-ui, Arial';
-      ctx.fillText(Press Restart to play again, W/2, H/2 + 46);
+      ctx.fillText(`Press Restart to play again`, W/2, H/2 + 46);
       ctx.restore();
     }
   }
   // HUD updater (OUTSIDE update function)
 function updateHUD() {
   document.getElementById("hudTimeScore").textContent =
-    Time: ${state.time.toFixed(1)}s • Score: ${state.score};
+    `Time: ${state.time.toFixed(1)}s • Score: ${state.score}`;
 
   document.getElementById("hudHealth").textContent =
-    Health: ${state.player.health};
+    `Health: ${state.player.health}`;
 
   document.getElementById("hudMultiplier").textContent =
-    x${state.multiplier.toFixed(1)};
+    `x${state.multiplier.toFixed(1)}`;
 }
   // drawing helpers
   function drawCube(x,y,size,color,withInner=true){
