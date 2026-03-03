@@ -131,16 +131,11 @@ canvas {
 
 .hud {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 20px;
   padding: 10px;
   font-weight: bold;
-}
-
-.multiplier-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 #restartBtn {
@@ -185,14 +180,11 @@ canvas {
   <div class="game-section">
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-  <div class="hud">
+<div class="hud">
   <div id="hudTimeScore"></div>
   <div id="hudHealth"></div>
-
-  <div class="multiplier-group">
-    <div id="hudMultiplier"></div>
-    <button id="restartBtn" class="btn">Restart</button>
-  </div>
+  <div id="hudMultiplier"></div>
+  <button id="restartBtn" class="btn">Restart</button>
 </div>
     <!-- Leaderboard Panel -->
     <div id="leaderboardPanel" style="
@@ -710,6 +702,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
