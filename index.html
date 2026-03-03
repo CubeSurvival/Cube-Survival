@@ -25,34 +25,44 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const leaderboardEl = document.getElementById("leaderboard");
 
-  async function loadLeaderboard() {
-    try {
-      const q = query(
-        collection(db, "leaderboard"),
-        orderBy("score", "desc"),
-        limit(10)
-      );
+  window.loadLeaderboard = async function () {
+  try {
+    const { collection, getDocs, query, orderBy, limit } = window.firestoreFunctions;
 
-      const snapshot = await getDocs(q);
+    const q = query(
+      collection(window.db, "leaderboard"),
+      orderBy("score", "desc"),
+      limit(20)
+    );
 
-      if (snapshot.empty) {
-        leaderboardEl.innerHTML = "<p>No scores yet!</p>";
-        return;
-      }
+    const snapshot = await getDocs(q);
 
-      let html = "";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        html += `<p>${data.name}: ${data.score}</p>`;
-      });
+    const leaderboardDiv = document.getElementById("leaderboard");
+    leaderboardDiv.innerHTML = "";
 
-      leaderboardEl.innerHTML = html;
+    let rank = 1;
 
-    } catch (err) {
-      console.error("Leaderboard error:", err);
-      leaderboardEl.innerHTML = "<p>Failed to load.</p>";
-    }
+    snapshot.forEach(doc => {
+      const data = doc.data();
+
+      const entry = document.createElement("div");
+      entry.className = "leaderboard-entry";
+
+      entry.innerHTML = `
+        <span class="rank">#${rank}</span>
+        <span class="name">${data.name}</span>
+        <span class="score">${data.score}</span>
+      `;
+
+      leaderboardDiv.appendChild(entry);
+      rank++;
+    });
+
+  } catch (error) {
+    console.error("Leaderboard error:", error);
+    document.getElementById("leaderboard").innerText = "Failed to load";
   }
+};
 
   // expose globally so gameOver can call it
   window.loadLeaderboard = loadLeaderboard;
@@ -126,6 +136,28 @@ canvas {
   background: rgba(255,255,255,0.04);
   border-left: 1px solid rgba(255,255,255,0.06);
   overflow-y: auto;
+}
+.leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 14px;
+}
+
+.rank {
+  width: 40px;
+  font-weight: bold;
+}
+
+.name {
+  flex: 1;
+  text-align: left;
+}
+
+.score {
+  width: 60px;
+  text-align: right;
 }
   </style>
 </head>
@@ -663,6 +695,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
