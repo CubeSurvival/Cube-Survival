@@ -1,7 +1,17 @@
 <!doctype html>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where } 
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  orderBy, 
+  limit, 
+  where,
+  updateDoc
+} 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Firebase config
@@ -17,7 +27,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 window.db = db;
-window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit, where };
+window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit, where, updateDoc };
 const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
 
 // Wait for DOM to exist
@@ -347,27 +357,25 @@ canvas {
   const name = prompt("Enter your name:");
   if (!name) return;
 
-  const { collection, addDoc, getDocs, query, where } = window.firestoreFunctions;
+  const { collection, addDoc, getDocs, query, where, updateDoc } = window.firestoreFunctions;
 
   const leaderboardRef = collection(window.db, "leaderboard");
 
-  // Check if this name already exists
   const q = query(leaderboardRef, where("name", "==", name));
   const snapshot = await getDocs(q);
 
   if (!snapshot.empty) {
-    // If existing score is lower, update it
     snapshot.forEach(async (docSnap) => {
       const existing = docSnap.data();
+
       if (score > existing.score) {
-        await docSnap.ref.update({
+        await updateDoc(docSnap.ref, {
           score: score,
           time: new Date()
         });
       }
     });
   } else {
-    // If name not found, create new entry
     await addDoc(leaderboardRef, {
       name: name,
       score: score,
@@ -695,6 +703,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
