@@ -106,6 +106,24 @@ window.addEventListener('DOMContentLoaded', () => {
   background: linear-gradient(180deg,#071025 0%, #0b1220 100%);
   color: #e6eef8;
 }
+.game-section {
+  position: relative; /* Needed so HUD can be positioned relative to canvas */
+}
+
+.hud {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: rgba(0,0,0,0.25);
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  z-index: 10;
+}
 
 .container {
   display: flex;
@@ -127,21 +145,6 @@ canvas {
   max-width: 900px;
   background: #071225;
   border-radius: 14px;
-}
-
-.hud {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 10px;
-  font-weight: bold;
-}
-
-#restartBtn {
-  padding: 6px 12px;
-  cursor: pointer;
-  font-weight: bold;
 }
 .leaderboard {
   width: 300px;
@@ -175,17 +178,18 @@ canvas {
   </style>
 </head>
 <body>
-  <div class="container">
-
   <div class="game-section">
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-<div class="hud">
-  <div id="hudTimeScore"></div>
-  <div id="hudHealth"></div>
-  <div id="hudMultiplier"></div>
-  <button id="restartBtn" class="btn">Restart</button>
-</div>
+  <div class="hud" id="hudOverlay">
+    <div id="hudTimeScore"></div>
+    <div id="hudHealth"></div>
+    <div class="multiplier-group">
+      <div id="hudMultiplier"></div>
+      <button id="restartBtn" class="btn">Restart</button>
+    </div>
+  </div>
+
     <!-- Leaderboard Panel -->
     <div id="leaderboardPanel" style="
     width:260px;
@@ -702,6 +706,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
