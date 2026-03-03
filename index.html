@@ -28,7 +28,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 window.db = db;
 window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit, where, updateDoc };
-const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
 
 // Wait for DOM to exist
 window.addEventListener('DOMContentLoaded', () => {
@@ -360,21 +359,19 @@ canvas {
   const { collection, addDoc, getDocs, query, where, updateDoc } = window.firestoreFunctions;
 
   const leaderboardRef = collection(window.db, "leaderboard");
-
   const q = query(leaderboardRef, where("name", "==", name));
   const snapshot = await getDocs(q);
 
   if (!snapshot.empty) {
-    snapshot.forEach(async (docSnap) => {
-      const existing = docSnap.data();
+    const docSnap = snapshot.docs[0]; // assume one per name
+    const existing = docSnap.data();
 
-      if (score > existing.score) {
-        await updateDoc(docSnap.ref, {
-          score: score,
-          time: new Date()
-        });
-      }
-    });
+    if (score > existing.score) {
+      await updateDoc(docSnap.ref, {
+        score: score,
+        time: new Date()
+      });
+    }
   } else {
     await addDoc(leaderboardRef, {
       name: name,
@@ -703,6 +700,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
