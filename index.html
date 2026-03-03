@@ -1,7 +1,7 @@
 <!doctype html>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } 
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where } 
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Firebase config
@@ -17,7 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 window.db = db;
-window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
+window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit, where };
 const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
 
 // Wait for DOM to exist
@@ -312,17 +312,37 @@ canvas {
   }
   //save score
   async function saveScore(score) {
-      const name = prompt("Enter your name:");
-      if (!name) return;
-    
-      const { collection, addDoc } = window.firestoreFunctions;
-    
-      await addDoc(collection(window.db, "leaderboard"), {
-        name: name,
-        score: score,
-        time: new Date()
-      });
-    }
+  const name = prompt("Enter your name:");
+  if (!name) return;
+
+  const { collection, addDoc, getDocs, query, where } = window.firestoreFunctions;
+
+  const leaderboardRef = collection(window.db, "leaderboard");
+
+  // Check if this name already exists
+  const q = query(leaderboardRef, where("name", "==", name));
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    // If existing score is lower, update it
+    snapshot.forEach(async (docSnap) => {
+      const existing = docSnap.data();
+      if (score > existing.score) {
+        await docSnap.ref.update({
+          score: score,
+          time: new Date()
+        });
+      }
+    });
+  } else {
+    // If name not found, create new entry
+    await addDoc(leaderboardRef, {
+      name: name,
+      score: score,
+      time: new Date()
+    });
+  }
+}
   // Game over
   function gameOver(){
     state.running = false;
@@ -643,6 +663,7 @@ function updateHUD() {
 </script>
 </body>
 </html>
+
 
 
 
