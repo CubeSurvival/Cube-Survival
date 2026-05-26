@@ -11,17 +11,12 @@ import {
   orderBy,
   limit,
   where,
-  updateDoc
+  updateDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import {
-  getDatabase,
-  ref,
-  set,
-  onValue,
-  remove,
-  onDisconnect
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref as dbRef, set, onValue, remove, onDisconnect } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -223,7 +218,7 @@ canvas {
     ctx.setTransform(ratio,0,0,ratio,0,0);
   }
   const playerId = Math.random().toString(36).substr(2, 9);
-  const playerRef = ref(realtimeDb, 'players/' + playerId);
+  const playerRef = dbRef(realtimeDb, 'players/' + playerId);
   onDisconnect(playerRef).remove();
   const otherPlayers = {};
   window.addEventListener('resize', resize);
