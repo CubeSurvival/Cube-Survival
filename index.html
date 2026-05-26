@@ -74,11 +74,8 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 };
 
-  // expose globally so gameOver can call it
-  window.loadLeaderboard = loadLeaderboard;
-
-  // load on page start
-  loadLeaderboard();
+// load on page start
+window.loadLeaderboard();
 });
 </script>
 <html lang="en">
@@ -99,7 +96,7 @@ window.addEventListener('DOMContentLoaded', () => {
     .btn{margin-left:auto;padding:8px 12px;border-radius:10px;border:0;background:#18354b;color:#dff6ff;cursor:pointer}
     @media (max-width:520px){canvas{height:460px}}
     .kbd{background:rgba(255,255,255,.03);padding:4px 8px;border-radius:6px}
-    hhtml, body {
+    html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
@@ -186,6 +183,8 @@ canvas {
 
 </div>
     <!-- Leaderboard Panel -->
+    <button id="restartBtn">Restart</button>
+  
     <div id="leaderboardPanel" style="
     width:260px;
     background:rgba(255,255,255,0.03);
