@@ -12,7 +12,7 @@ import {
   limit,
   where,
   updateDoc
-} 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 import {
   getDatabase,
@@ -21,7 +21,7 @@ import {
   onValue,
   remove,
   onDisconnect
-} 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -81,9 +81,6 @@ window.addEventListener('DOMContentLoaded', () => {
     console.error("Leaderboard error:", error);
     document.getElementById("leaderboard").innerText = "Failed to load";
   }
-    const playerRef = ref(realtimeDb, 'players/' + playerId);
-
-onDisconnect(playerRef).remove();
 };
 // load on page start
 window.loadLeaderboard();
@@ -226,6 +223,8 @@ canvas {
     ctx.setTransform(ratio,0,0,ratio,0,0);
   }
   const playerId = Math.random().toString(36).substr(2, 9);
+  const playerRef = ref(realtimeDb, 'players/' + playerId);
+  onDisconnect(playerRef).remove();
   const otherPlayers = {};
   window.addEventListener('resize', resize);
   resize();
@@ -573,7 +572,7 @@ onValue(ref(realtimeDb, 'players'), (snapshot) => {
 
     // cap enemies
     if(state.enemies.length > 40) state.enemies.splice(0, state.enemies.length - 40);
-    if (Date.now() - lastNetworkUpdate > 50) {
+   if (Date.now() - lastNetworkUpdate > 50 && state.player) {
   lastNetworkUpdate = Date.now();
 
   set(ref(realtimeDb, 'players/' + playerId), {
