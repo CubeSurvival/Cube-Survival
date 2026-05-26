@@ -378,16 +378,16 @@ canvas {
   const snapshot = await getDocs(q);
 
   if (!snapshot.empty) {
-    snapshot.forEach(async (docSnap) => {
-      const existing = docSnap.data();
+snapshot.forEach(async (docSnap) => {
+  const existing = docSnap.data();
 
-      if (score > existing.score) {
-        await updateDoc(docSnap.ref, {
-          score: score,
-          time: new Date()
-        });
-      }
+  if (score > existing.score) {
+    await updateDoc(doc(db, "leaderboard", docSnap.id), {
+      score: score,
+      time: new Date()
     });
+  }
+});
   } else {
     await addDoc(leaderboardRef, {
       name: name,
