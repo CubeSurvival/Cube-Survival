@@ -1,18 +1,27 @@
 <!doctype html>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  orderBy, 
-  limit, 
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  limit,
   where,
   updateDoc
-} 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  remove,
+  onDisconnect
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -26,6 +35,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const realtimeDb = getDatabase(app);
 window.db = db;
 window.firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit, where, updateDoc };
 const firestoreFunctions = { collection, addDoc, getDocs, query, orderBy, limit };
@@ -73,7 +83,6 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById("leaderboard").innerText = "Failed to load";
   }
 };
-
 // load on page start
 window.loadLeaderboard();
 });
@@ -199,8 +208,10 @@ canvas {
 
 <script>
 (() => {
+  let lastNetworkUpdate = 0;
   // Canvas & HiDPI
   const canvas = document.getElementById('gameCanvas');
+  const playerName = prompt('Enter your name') || 'Player';
   const ctx = canvas.getContext('2d');
 
   function resize(){
@@ -212,6 +223,8 @@ canvas {
     canvas.style.height = h + 'px';
     ctx.setTransform(ratio,0,0,ratio,0,0);
   }
+  const playerId = Math.random().toString(36).substr(2, 9);
+  const otherPlayers = {};
   window.addEventListener('resize', resize);
   resize();
 
@@ -267,7 +280,7 @@ canvas {
       multiplier:1,
       wave:1,
       nextBurstAt:8 + Math.random()*6
-    };
+    }; 
   }
   let state = newState();
 
@@ -402,6 +415,20 @@ canvas {
     for(let i=0;i<3;i++) spawnEnemy(i===0?'chaser':i===1?'zig':'scout');
   }
   restart();
+onValue(ref(realtimeDb, 'players'), (snapshot) => {
+  const data = snapshot.val() || {};
+
+  // reset every update
+  for (const id in otherPlayers) {
+    delete otherPlayers[id];
+  }
+
+  for (const id in data) {
+    if (id !== playerId) {
+      otherPlayers[id] = data[id];
+    }
+  }
+});
 
   // Main loop
   let last = performance.now();
@@ -587,6 +614,22 @@ canvas {
       // faint shadow
       ctx.save(); ctx.globalAlpha = 0.12; ctx.fillStyle = '#000'; ctx.fillRect(e.x - e.size/2, e.y + e.size/2 + 3, e.size, 3); ctx.restore();
     }
+    for (const id in otherPlayers) {
+  const op = otherPlayers[id];
+
+  drawCube(
+    op.x - 13,
+    op.y - 13,
+    26,
+    '#22c55e',
+    true
+  );
+
+  ctx.fillStyle = 'white';
+  ctx.font = '12px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(op.name || 'Player', op.x, op.y - 20);
+}
 
     // player (outline pulsing if invul/shield)
     const p = state.player;
@@ -638,6 +681,7 @@ canvas {
       ctx.restore();
     }
   }
+
   // HUD updater (OUTSIDE update function)
 function updateHUD() {
   document.getElementById("hudTimeScore").textContent =
@@ -686,7 +730,18 @@ function updateHUD() {
     if (fill) ctx.fill();
     if (stroke) ctx.stroke();
   }
+if (Date.now() - lastNetworkUpdate > 50) {
+  lastNetworkUpdate = Date.now();
 
+  set(ref(realtimeDb, 'players/' + playerId), {
+    name: playerName,
+    x: state.player.x,
+    y: state.player.y,
+    health: state.player.health,
+    score: state.score,
+    updated: Date.now()
+  });
+}
   // Start/Restart button
   restartBtn.addEventListener('click', ()=>{
     restart();
